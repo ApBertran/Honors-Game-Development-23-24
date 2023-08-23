@@ -69,6 +69,7 @@ function love.draw()
     -- draw welcome text
     love.graphics.setFont(smallFont)
     love.graphics.printf('Hello Pong!', 0, 20, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf(tostring(love.timer.getFPS()), 0, 3, VIRTUAL_WIDTH, 'center')
 
     -- draw scores for each player
     love.graphics.setFont(scoreFont)
