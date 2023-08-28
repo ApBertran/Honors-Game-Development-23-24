@@ -1,24 +1,5 @@
---[[
-    GD50 2018
-    Pong Remake
-
-    pong-5
-    "The Class Update"
-
-    -- Main Program --
-
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    Originally programmed by Atari in 1972. Features two
-    paddles, controlled by players, with the goal of getting
-    the ball past your opponent's edge. First to 10 points wins.
-
-    This version is built to more closely resemble the NES than
-    the original Pong machines or the Atari 2600 in terms of
-    resolution, though in widescreen (16:9) so it looks nicer on 
-    modern systems.
-]]
+-- special abilities idea: wider paddle , shrink paddle, slow or fast ball, invert controls
+-- make special abilities fade in
 
 -- push is a library that will allow us to draw our game at a virtual
 -- resolution, instead of however large our window is; used to provide
@@ -57,12 +38,18 @@ PADDLE_SPEED = 200
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    -- set the title of the window
+    love.window.setTitle('Pong')
+
     -- "seed" the RNG so that calls to random are always random
     -- use the current time, since that will vary on startup every time
     math.randomseed(os.time())
 
     -- more "retro-looking" font object we can use for any text
     smallFont = love.graphics.newFont('font.ttf', 8)
+
+    -- larger font for scoring
+    scoreFont = love.graphics.newFont('font.ttf', 32)
 
     -- set LÖVE2D's active font to the smallFont object
     love.graphics.setFont(smallFont)
@@ -73,6 +60,10 @@ function love.load()
         resizable = true,
         vsync = true
     })
+
+    -- initialize score variables
+    player1Score = 0
+    player2Score = 0
 
     -- initialize our player paddles; make them global so that they can be
     -- detected by other functions and modules
@@ -93,6 +84,39 @@ end
     since the last frame, which LÖVE2D supplies us.
 ]]
 function love.update(dt)
+    if gameState == 'play' then
+        -- detect collision of ball with paddles
+        if ball:collides(player1) then
+            ball.dx = -ball.dx * 1.03
+            ball.x = player1.x + 5
+
+            if ball.dy < 0 then
+                ball.dy = -math.random(10, 150)
+            else
+                ball.dy = math.random(10, 150)
+            end
+        end
+        if ball:collides(player2) then
+            ball.dx = -ball.dx * 1.03
+            ball.x = player2.x - 4
+
+            if ball.dy < 0 then
+                ball.dy = -math.random(10, 150)
+            else
+                ball.dy = math.random(10, 150)
+            end
+        end
+
+        -- detect boundary collision on the screen
+        if ball.y <= 0 then
+            ball.y = 0
+            ball.dy = -ball.dy
+        elseif ball.y >= VIRTUAL_HEIGHT - 4 then
+            ball.y = VIRTUAL_HEIGHT - 4
+            ball.dy = -ball.dy
+        end
+    end
+
     -- player 1 movement
     if love.keyboard.isDown('w') then
         player1.dy = -PADDLE_SPEED
@@ -164,6 +188,12 @@ function love.draw()
     else
         love.graphics.printf('Hello Play State!', 0, 20, VIRTUAL_WIDTH, 'center')
     end
+
+    -- draw score to the screen
+    love.graphics.setFont(scoreFont)
+    love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
+    love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
+
 
     -- render paddles, now using their class's render method
     player1:render()
