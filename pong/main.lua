@@ -223,9 +223,9 @@ function love.update(dt)
     else
         if ball.dx < 400 and ball.dx > -400 then
             if ball.dx < 0 then
-                if ball.y < player1.y - 2 then
+                if ball.y < player1.y + (player1.height / 2) - 1 then
                     player1.dy = -(player1.speed * 0.85)
-                elseif ball.y > player1.y + 2 then
+                elseif ball.y > player1.y + (player1.height / 2) + 1 then
                     player1.dy = player1.speed * 0.85
                 else
                     player1.dy = 0
@@ -240,9 +240,9 @@ function love.update(dt)
                 end
             end
         else
-            if ball.y < player1.y - 2 then
+            if ball.y < player1.y + 2 then
                 player1.dy = -(player1.speed * 0.85)
-            elseif ball.y > player1.y + 2 then
+            elseif ball.y > player1.y + 6 then
                 player1.dy = player1.speed * 0.85
             else
                 player1.dy = 0
@@ -261,9 +261,9 @@ function love.update(dt)
         end
     else
         if ball.dx > 0 or ball.x > VIRTUAL_WIDTH / 3 then
-            if ball.y < player2.y - 2 then
+            if ball.y < player2.y + (player2.height / 2) - 1 then
                 player2.dy = -(player2.speed * 0.85)
-            elseif ball.y > player2.y + 2 then
+            elseif ball.y > player2.y + (player2.height / 2) + 1 then
                 player2.dy = player2.speed * 0.85
             else
                 player2.dy = 0
