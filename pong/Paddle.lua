@@ -26,11 +26,12 @@ Paddle = Class{}
     have their own x, y, width, and height values, thus serving as containers
     for data. In this sense, they're very similar to structs in C.
 ]]
-function Paddle:init(x, y, width, height)
+function Paddle:init(x, y, width, height, speed)
     self.x = x
     self.y = y
     self.width = width
     self.height = height
+    self.speed = speed
     self.dy = 0
 end
 
@@ -58,5 +59,23 @@ end
     newest version of LÖVE2D, you can even draw rounded rectangles!
 ]]
 function Paddle:render()
+    -- love.graphics.setColor({255, 255, 255})
+    -- change paddle color if slowed
+    if self.speed == 150 then
+        love.graphics.setColor({0, 0, 255})
+    end
+
     love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+
+    -- draw border showing big or small powerup
+    if self.height > 20 then
+        love.graphics.setColor({0, 255, 0})
+        love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    elseif self.height < 20 then
+        love.graphics.setColor({255, 0, 0})
+        love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    end
+
+        -- reset color to white to ensure nothing else gets rendered in a different color
+        love.graphics.setColor({255, 255, 255})
 end

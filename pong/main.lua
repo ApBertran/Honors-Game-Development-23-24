@@ -23,6 +23,8 @@ require 'Paddle'
 -- but which will mechanically function very differently
 require 'Ball'
 
+require 'Powerup'
+
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
@@ -58,8 +60,14 @@ function love.load()
         ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
         ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
         ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
-        ['victory'] = love.audio.newSource('sounds/victory.wav', 'static')
+        ['victory'] = love.audio.newSource('sounds/victory.wav', 'static'),
+        ['grow'] = love.audio.newSource('sounds/grow.wav', 'static'),
+        ['shrink'] = love.audio.newSource('sounds/shrink.wav', 'static'),
+        ['slow'] = love.audio.newSource('sounds/slow.wav', 'static')
     }
+
+    powerups = {}
+    playerCount = 1
 
     -- initialize window with virtual resolution
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -75,10 +83,13 @@ function love.load()
     -- track serving player
     servingPlayer = 1
 
+    -- initialize player hit-tracking variable
+    lastHit = 0
+
     -- initialize our player paddles; make them global so that they can be
     -- detected by other functions and modules
-    player1 = Paddle(10, 30, 5, 20)
-    player2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
+    player1 = Paddle(10, 30, 5, 20, 200)
+    player2 = Paddle(VIRTUAL_WIDTH - 15, VIRTUAL_HEIGHT - 30, 5, 20, 200)
 
     -- place a ball in the middle of the screen
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
@@ -102,9 +113,11 @@ end
 ]]
 function love.update(dt)
     if gameState == 'serve' then
+        resetAbilities()
+        powerups = {}
         ball.dy = math.random(-50, 50)
         if servingPlayer == 1 then
-            ball.dx = math.random(140, 200)
+            ball.dx = math.random(140, 200) -- 140, 200
         else
             ball.dx = -math.random(140, 200)
         end
@@ -120,6 +133,7 @@ function love.update(dt)
                 ball.dy = math.random(10, 150)
             end
             sounds['paddle_hit']:play()
+            lastHit = 1
         end
         if ball:collides(player2) then
             ball.dx = -ball.dx * 1.03
@@ -131,6 +145,14 @@ function love.update(dt)
                 ball.dy = math.random(10, 150)
             end
             sounds['paddle_hit']:play()
+            lastHit = 2
+        end
+
+        -- limit speed of ball
+        if ball.dx > 800 then
+            ball.dx = 800
+        elseif ball.dx < -800 then
+            ball.dx = -800
         end
 
         -- detect boundary collision on the top and bottom of the screen
@@ -143,6 +165,14 @@ function love.update(dt)
             ball.y = VIRTUAL_HEIGHT - 4
             ball.dy = -ball.dy
             sounds['wall_hit']:play()
+        end
+
+        pSize=0
+        for i,v in ipairs(powerups) do
+            pSize=pSize+1
+        end
+        if math.random(1,300) < 2 and pSize < 5 then
+            table.insert(powerups, Powerup(math.random(VIRTUAL_WIDTH / 2 - 80, VIRTUAL_WIDTH / 2 + 66), math.random(VIRTUAL_HEIGHT / 2 - 80, VIRTUAL_HEIGHT / 2 + 66)))
         end
     end
 
@@ -182,27 +212,105 @@ function love.update(dt)
     end
 
     -- player 1 movement
-    if love.keyboard.isDown('w') then
-        player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        player1.dy = PADDLE_SPEED
+    if playerCount > 0 then
+        if love.keyboard.isDown('w') then
+            player1.dy = -player1.speed
+        elseif love.keyboard.isDown('s') then
+            player1.dy = player1.speed
+        else
+            player1.dy = 0
+        end
     else
-        player1.dy = 0
+        if ball.dx < 400 and ball.dx > -400 then
+            if ball.dx < 0 then
+                if ball.y < player1.y - 2 then
+                    player1.dy = -(player1.speed * 0.85)
+                elseif ball.y > player1.y + 2 then
+                    player1.dy = player1.speed * 0.85
+                else
+                    player1.dy = 0
+                end
+            else
+                if player1.y > VIRTUAL_HEIGHT / 2 - (player1.height / 2) + 2 then
+                    player1.dy = -(player1.speed * 0.85)
+                elseif player1.y < VIRTUAL_HEIGHT / 2 - (player1.height / 2) - 2 then
+                    player1.dy = player1.speed * 0.85
+                else
+                    player1.dy = 0
+                end
+            end
+        else
+            if ball.y < player1.y - 2 then
+                player1.dy = -(player1.speed * 0.85)
+            elseif ball.y > player1.y + 2 then
+                player1.dy = player1.speed * 0.85
+            else
+                player1.dy = 0
+            end
+        end
     end
 
     -- player 2 movement
-    if love.keyboard.isDown('up') then
-        player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        player2.dy = PADDLE_SPEED
+    if playerCount > 1 then
+        if love.keyboard.isDown('up') then
+            player2.dy = -player2.speed
+        elseif love.keyboard.isDown('down') then
+            player2.dy = player2.speed
+        else
+            player2.dy = 0
+        end
     else
-        player2.dy = 0
+        if ball.dx > 0 or ball.x > VIRTUAL_WIDTH / 3 then
+            if ball.y < player2.y - 2 then
+                player2.dy = -(player2.speed * 0.85)
+            elseif ball.y > player2.y + 2 then
+                player2.dy = player2.speed * 0.85
+            else
+                player2.dy = 0
+            end
+        end
     end
 
     -- update our ball based on its DX and DY only if we're in play state;
     -- scale the velocity by dt so movement is framerate-independent
     if gameState == 'play' then
         ball:update(dt)
+    end
+
+    -- check for collision with powerups
+    for i,v in ipairs(powerups) do
+        if v:collides(ball) then
+            temp = math.random(1,4)
+            if temp < 2 then
+                if lastHit == 1 then
+                    v:Ability(player1, 'big')
+                else
+                    v:Ability(player2, 'big')
+                end
+                sounds['grow']:play()
+            elseif temp <= 3 then
+                if lastHit == 1 then
+                    v:Ability(player2, 'small')
+                else
+                    v:Ability(player1, 'small')
+                end
+                sounds['shrink']:play()
+            elseif temp <= 4 then
+                if lastHit == 1 then
+                    v:Ability(player2, 'slow')
+                    if player1.speed == 150 then
+                        player1.speed = 200
+                    end
+                else
+                    v:Ability(player1, 'slow')
+                    if player2.speed == 150 then
+                        player2.speed = 200
+                    end
+                end
+                sounds['slow']:play()
+            end
+            table.remove(powerups, i)
+        end
     end
 
     player1:update(dt)
@@ -237,6 +345,18 @@ function love.keypressed(key)
                 servingPlayer = 1
             end
         end
+
+    elseif gameState == 'start' then
+        if key == '0' then
+            playerCount = 0
+            gameState = 'serve'
+        elseif key == '1' then
+            playerCount = 1
+            gameState = 'serve'
+        else
+            playerCount = 2
+            gameState = 'serve'
+        end
     end
 end
 
@@ -256,7 +376,7 @@ function love.draw()
     if gameState == 'start' then
         love.graphics.setFont(smallFont)
         love.graphics.printf('Welcome to Pong!', 0, 10, VIRTUAL_WIDTH, 'center')
-        love.graphics.printf('Press Enter to begin!', 0, 20, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Press 0, 1, or 2 for the number of players.', 0, 40, VIRTUAL_WIDTH, 'center')
         displayScore()
     elseif gameState == 'serve' then
         love.graphics.setFont(smallFont)
@@ -267,7 +387,7 @@ function love.draw()
         -- no messages to display
     elseif gameState == 'done' then
         love.graphics.setFont(largeFont)
-        love.graphics.printf('Player'.. tostring(winningPlayer) ..' wins!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Player '.. tostring(winningPlayer) ..' wins!', 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.setFont(smallFont)
         love.graphics.printf('Press Enter to restart!', 0, 30, VIRTUAL_WIDTH, 'center')
     end
@@ -278,6 +398,11 @@ function love.draw()
 
     -- render ball using its class's render method
     ball:render()
+
+    -- render powerups
+    for i,v in ipairs(powerups) do
+        v:render()
+    end
 
     -- render FPS
     displayFPS()
@@ -298,4 +423,11 @@ function displayScore()
     love.graphics.setFont(scoreFont)
     love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
     love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
+end
+
+function resetAbilities()
+    player1.height = 20
+    player2.height = 20
+    player1.speed = 200
+    player2.speed = 200
 end
