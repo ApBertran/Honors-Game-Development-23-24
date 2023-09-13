@@ -2,6 +2,9 @@
     GD50
     Flappy Bird Remake
 
+    bird5
+    "The Infinite Pipe Update"
+
     Author: Colton Ogden
     cogden@cs50.harvard.edu
 
@@ -23,6 +26,10 @@ Class = require 'class'
 -- bird class we've written
 require 'Bird'
 
+-- pipe classes we've written
+require 'Pipe'
+require 'PipePair'
+
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -41,13 +48,22 @@ local groundScroll = 0
 
 -- speed at which we should scroll our images, scaled by dt
 local BACKGROUND_SCROLL_SPEED = 30
-local GROUND_SCROLL_SPEED = 60
+local GROUND_SCROLL_SPEED = 120
 
 -- point at which we should loop our background back to X 0
 local BACKGROUND_LOOPING_POINT = 413
 
 -- our bird sprite
 local bird = Bird()
+
+-- our table of spawning Pipes
+local pipePairs = {}
+
+-- our timer for spawning pipes
+local spawnTimer = 0
+
+-- initialize last recorded randomized Y value
+local lastY = -PIPE_HEIGHT + math.random(80) + 20
 
 function love.load()
     -- initialize our nearest-neighbor filter
@@ -64,7 +80,7 @@ function love.load()
     })
 
     -- initialize input table
-    love.keyboard.keysPressed = { }
+    love.keyboard.keysPressed = {}
 end
 
 function love.resize(w, h)
@@ -72,14 +88,18 @@ function love.resize(w, h)
 end
 
 function love.keypressed(key)
-    -- add key pressed to our table of keys
+    -- add to our table of keys pressed this frame
     love.keyboard.keysPressed[key] = true
-
+    
     if key == 'escape' then
         love.event.quit()
     end
 end
 
+--[[
+    New function used to check our global input table for keys we activated during
+    this frame, looked up by their string value.
+]]
 function love.keyboard.wasPressed(key)
     if love.keyboard.keysPressed[key] then
         return true
@@ -97,22 +117,44 @@ function love.update(dt)
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) 
         % VIRTUAL_WIDTH
 
+    spawnTimer = spawnTimer + dt
+
+    -- spawn a new Pipe if the timer is past 2 seconds
+    if spawnTimer > 2 then
+        local y = math.max(-PIPE_HEIGHT + 10, math.min(lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+        lastY = y
+        table.insert(pipePairs, PipePair(y))
+        print('Added new pipe pair!')
+        spawnTimer = 0
+    end
+
+    -- update the bird for input and gravity
     bird:update(dt)
 
+    -- for every pipe in the scene...
+    for k, pair in pairs(pipePairs) do
+        pair:update(dt)
+
+        -- if pipe pair is no longer visible past left edge, remove it from scene
+        if pair.remove then
+            table.remove(pipePairs, k)
+        end
+    end
+
     -- reset input table
-    love.keyboard.keysPressed = { }
+    love.keyboard.keysPressed = {}
 end
 
 function love.draw()
     push:start()
-    
-    -- here, we draw our images shifted to the left by their looping point; eventually,
-    -- they will revert back to 0 once a certain distance has elapsed, which will make it
-    -- seem as if they are infinitely scrolling. choosing a looping point that is seamless
-    -- is key, so as to provide the illusion of looping
 
     -- draw the background at the negative looping point
     love.graphics.draw(background, -backgroundScroll, 0)
+
+    -- render all the pipes in our scene
+    for k, pair in pairs(pipePairs) do
+        pair:render()
+    end
 
     -- draw the ground on top of the background, toward the bottom of the screen,
     -- at its negative looping point

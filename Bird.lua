@@ -10,7 +10,7 @@
 
 Bird = Class{}
 
-local GRAVITY = 12
+local GRAVITY = 15
 
 love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -24,7 +24,7 @@ function Bird:init()
     self.x = VIRTUAL_WIDTH / 2 - (self.width / 2)
     self.y = VIRTUAL_HEIGHT / 2 - (self.height / 2)
 
-    -- Y velocity; gravity
+    -- Y velocity
     self.dy = 0
 end
 
@@ -35,12 +35,12 @@ function Bird:update(dt)
         self.dy = 5
     end
 
-    -- add a sudden burst of negative gravity if we hit space
+    -- allow the bird to "jump"
     if love.keyboard.wasPressed('space') then
-        self.dy = -3
+        self.dy = -3.75
     end
 
-    -- apply current velocity to Y position
+    -- apply velocity to position
     self.y = self.y + self.dy
 end
 
