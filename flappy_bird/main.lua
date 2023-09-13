@@ -65,6 +65,8 @@ local spawnTimer = 0
 -- initialize last recorded randomized Y value
 local lastY = -PIPE_HEIGHT + math.random(80) + 20
 
+local scrolling = true
+
 function love.load()
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -109,35 +111,48 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-    -- scroll background by preset speed * dt, looping back to 0 after the looping point
-    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) 
-        % BACKGROUND_LOOPING_POINT
+    if scrolling then
+        -- scroll background by preset speed * dt, looping back to 0 after the looping point
+        backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) 
+            % BACKGROUND_LOOPING_POINT
 
-    -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
-    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) 
-        % VIRTUAL_WIDTH
+        -- scroll ground by preset speed * dt, looping back to 0 after the screen width passes
+        groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) 
+            % VIRTUAL_WIDTH
 
-    spawnTimer = spawnTimer + dt
+        spawnTimer = spawnTimer + dt
 
-    -- spawn a new Pipe if the timer is past 2 seconds
-    if spawnTimer > 2 then
-        local y = math.max(-PIPE_HEIGHT + 10, math.min(lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
-        lastY = y
-        table.insert(pipePairs, PipePair(y))
-        print('Added new pipe pair!')
-        spawnTimer = 0
-    end
+        -- spawn a new Pipe if the timer is past 2 seconds
+        if spawnTimer > 2 then
+            local y = math.max(-PIPE_HEIGHT + 10, math.min(lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+            lastY = y
+            table.insert(pipePairs, PipePair(y))
+            print('Added new pipe pair!')
+            spawnTimer = 0
+        end
 
-    -- update the bird for input and gravity
-    bird:update(dt)
+        -- update the bird for input and gravity
+        bird:update(dt)
 
-    -- for every pipe in the scene...
-    for k, pair in pairs(pipePairs) do
-        pair:update(dt)
+        -- for every pipe in the scene...
+        for k, pair in pairs(pipePairs) do
+            pair:update(dt)
+            
+            -- check to see if bird collided with pipe
+            for l, pipe in pairs(pair.pipes) do
+                if bird:collides(pipe) then
+                    scrolling = false
+                end
+            end
 
-        -- if pipe pair is no longer visible past left edge, remove it from scene
-        if pair.remove then
-            table.remove(pipePairs, k)
+            if pair.x < -PIPE_WIDTH then
+                pair.remove = true
+            end
+
+            -- if pipe pair is no longer visible past left edge, remove it from scene
+            if pair.remove then
+                table.remove(pipePairs, k)
+            end
         end
     end
 
