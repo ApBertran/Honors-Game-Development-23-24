@@ -1,7 +1,11 @@
 --[[
     PipePair Class
 
-    Used to reprsent a pair of pipes that stick together as they scroll
+    Author: Colton Ogden
+    cogden@cs50.harvard.edu
+
+    Used to represent a pair of pipes that stick together as they scroll, providing an opening
+    for the player to jump through in order to score a point.
 ]]
 
 PipePair = Class{}
@@ -10,7 +14,7 @@ PipePair = Class{}
 local GAP_HEIGHT = 90
 
 function PipePair:init(y)
-    --initialize pipes past the edge of the screen
+    -- initialize pipes past the end of the screen
     self.x = VIRTUAL_WIDTH + 32
 
     -- y value is for the topmost pipe; gap is a vertical shift of the second lower pipe
@@ -27,8 +31,8 @@ function PipePair:init(y)
 end
 
 function PipePair:update(dt)
-    -- remove the pipe from the scene if beyond left edge of the screen
-    -- otherwise, keep rendering it as it moves from right to left
+    -- remove the pipe from the scene if it's beyond the left edge of the screen,
+    -- else move it from right to left
     if self.x > -PIPE_WIDTH then
         self.x = self.x - PIPE_SPEED * dt
         self.pipes['lower'].x = self.x
