@@ -54,8 +54,16 @@ function Bird:update(dt)
     end
 
     -- add a sudden burst of negative gravity if we hit space
-    if love.keyboard.wasPressed('space') then
-        self.dy = -3
+    if not AIMode then
+        if love.keyboard.wasPressed('space') or love.mouse.wasPressed(1) then
+            self.dy = -3
+            sounds['jump']:play()
+        end
+    else 
+        if self.y >= nearestPipeY then
+            self.dy = -3
+            sounds['jump']:play()
+        end
     end
 
     -- apply current velocity to Y position

@@ -37,6 +37,8 @@ require 'StateMachine'
 require 'states/BaseState'
 require 'states/PlayState'
 require 'states/TitleScreenState'
+require 'states/ScoreState'
+require 'states/CountdownState'
 
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
@@ -55,8 +57,8 @@ local ground = love.graphics.newImage('ground.png')
 local groundScroll = 0
 
 -- speed at which we should scroll our images, scaled by dt
-local BACKGROUND_SCROLL_SPEED = 30
-local GROUND_SCROLL_SPEED = 130
+BACKGROUND_SCROLL_SPEED = 30
+GROUND_SCROLL_SPEED = 130
 
 -- point at which we should loop our background back to X 0
 local BACKGROUND_LOOPING_POINT = 413
@@ -66,6 +68,8 @@ local GROUND_LOOPING_POINT = 514
 
 -- scrolling variable to pause the game when we collide with a pipe
 local scrolling = true
+
+AIMode = false
 
 function love.load()
     -- initialize our nearest-neighbor filter
@@ -81,6 +85,19 @@ function love.load()
     hugeFont = love.graphics.newFont('flappy.ttf', 56)
     love.graphics.setFont(flappyFont)
 
+    -- initialize our table of sounds
+    sounds = {
+        ['jump'] = love.audio.newSource('jump.wav', 'static'),
+        ['explosion'] = love.audio.newSource('explosion.wav', 'static'),
+        ['hurt'] = love.audio.newSource('hurt.wav', 'static'),
+        ['score'] = love.audio.newSource('score.wav', 'static'),
+        ['music'] = love.audio.newSource('marios_way.mp3', 'static')
+    }
+
+    -- start background music
+    sounds['music']:setLooping(true)
+    sounds['music']:play()
+
     -- initialize our virtual resolution
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         vsync = true,
@@ -92,11 +109,15 @@ function love.load()
     gStateMachine = StateMachine {
         ['title'] = function() return TitleScreenState() end,
         ['play'] = function() return PlayState() end,
+        ['score'] = function() return ScoreState() end,
+        ['countdown'] = function() return CountdownState() end
     }
     gStateMachine:change('title')
 
     -- initialize input table
     love.keyboard.keysPressed = {}
+
+    love.mouse.buttonsPressed = {}
 end
 
 function love.resize(w, h)
@@ -112,16 +133,20 @@ function love.keypressed(key)
     end
 end
 
+function love.mousepressed(x, y, button)
+    love.mouse.buttonsPressed[button] = true
+end
+
 --[[
     New function used to check our global input table for keys we activated during
     this frame, looked up by their string value.
 ]]
 function love.keyboard.wasPressed(key)
-    if love.keyboard.keysPressed[key] then
-        return true
-    else
-        return false
-    end
+    return love.keyboard.keysPressed[key]
+end
+
+function love.mouse.wasPressed(button)
+    return love.mouse.buttonsPressed[button]
 end
 
 function love.update(dt)
@@ -135,6 +160,7 @@ function love.update(dt)
 
     -- reset input table
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed = {}
 end
 
 function love.draw()
