@@ -41,8 +41,8 @@ function PlayState:update(dt)
         -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
         -- no higher than 10 pixels below the top edge of the screen,
         -- and no lower than a gap length (90 pixels) from the bottom
-        local y = math.max(-PIPE_HEIGHT + 10, 
-            math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+        local y = math.max(-PIPE_HEIGHT + 40, 
+            math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 130 - PIPE_HEIGHT))
         self.lastY = y
 
         -- add a new pipe pair at the end of the screen at our new Y
@@ -59,14 +59,14 @@ function PlayState:update(dt)
             if pair.x + PIPE_WIDTH < self.bird.x then
                 self.score = self.score + 1
                 pair.scored = true
-                GROUND_SCROLL_SPEED = GROUND_SCROLL_SPEED * 1.03
-                BACKGROUND_SCROLL_SPEED = BACKGROUND_SCROLL_SPEED * 1.03
-                PIPE_SPEED = PIPE_SPEED * 1.03
-                spawnRate = spawnRate / 1.025
+                GROUND_SCROLL_SPEED = GROUND_SCROLL_SPEED * 1.015
+                BACKGROUND_SCROLL_SPEED = BACKGROUND_SCROLL_SPEED * 1.015
+                PIPE_SPEED = PIPE_SPEED * 1.015
+                spawnRate = spawnRate / 1.01
                 sounds['score']:play()
             end
             if nearestPipe == 'not found' then
-                nearestPipeY = pair.y + PIPE_HEIGHT + GAP_HEIGHT - 30
+                nearestPipeY = pair.y + PIPE_HEIGHT + pair.gap_height - 30
                 nearestPipe = 'found'
             end
         end

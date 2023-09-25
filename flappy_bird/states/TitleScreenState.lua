@@ -24,4 +24,7 @@ function TitleScreenState:render()
 
     love.graphics.setFont(mediumFont)
     love.graphics.printf('Press Enter', 0, 100, VIRTUAL_WIDTH, 'center')
+
+    love.graphics.setFont(smallFont)
+    love.graphics.printf('Press 1 for AI Mode', 0, 130, VIRTUAL_WIDTH, 'center')
 end

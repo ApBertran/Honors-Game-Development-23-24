@@ -95,8 +95,8 @@ function love.load()
     }
 
     -- start background music
-    sounds['music']:setLooping(true)
-    sounds['music']:play()
+    -- sounds['music']:setLooping(true)
+    -- sounds['music']:play()
 
     -- initialize our virtual resolution
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
