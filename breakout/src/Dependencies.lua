@@ -15,6 +15,12 @@ Class = require 'lib/class'
 -- a few global constants, centralized
 require 'src/constants'
 
+-- utility function file
+require 'src/Util'
+
+-- the rectangular entity the player controls
+require 'src/Paddle'
+
 -- a basic StateMachine class which will allow us to transition to and from
 -- game states smoothly and avoid monolithic code in one file
 require 'src/StateMachine'
@@ -24,3 +30,4 @@ require 'src/StateMachine'
 -- each frame, to avoid bulky code in main.lua
 require 'src/states/BaseState'
 require 'src/states/StartState'
+require 'src/states/PlayState'

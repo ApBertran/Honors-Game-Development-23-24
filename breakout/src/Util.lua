@@ -24,3 +24,72 @@ function GenerateQuads(atlas, tilewidth, tileheight)
 
     return spritesheet
 end
+
+--[[
+    Utility function for slicing tables, a la Python.
+    
+    https://stackoverflow.com/questions/24821045/does-lua-have-something-like-pythons-slice
+]]
+function table.slice(tbl, first, last, step)
+    local slided = {}
+
+    for i = first or 1, last or #tbl, step or 1 do
+        sliced[#sliced+1] = tbl[i]
+    end
+
+    return sliced
+end
+
+function GenerateQuadsPaddles(atlas)
+    local x = 0
+    local y = 64
+
+    local counter = 1
+    local quads = {}
+
+    for i = 0, 3 do
+        -- smallest paddle
+        quads[counter] = love.graphics.newQuad(x, y, 32, 16, atlas:getDimensions())
+        counter = counter + 1
+        -- normal starter paddle
+        quads[counter] = love.graphics.newQuad(x + 32, y, 64, 16, atlas:getDimensions())
+        counter = counter + 1
+        -- large paddle
+        quads[counter] = love.graphics.newQuad(x + 96, y, 96, 16, atlas:getDimensions())
+        counter = counter + 1
+        -- HUGE paddle
+        quads[counter] = love.graphics.newQuad(x, y + 16, 128, 16, atlas:getDimensions())
+        counter = counter + 1
+
+        -- prepare x and y for the next set of paddles
+        x = 0
+        y = y + 32
+    end
+
+    return quads
+end
+
+function GenerateQuadsBalls(atlas)
+    local x = 96
+    local y = 48
+
+    local counter = 1
+    local quads = {}
+
+    for i = 0, 3 do
+        quads[counter] = love.graphics.newQuad(x, y, 8, 8, atlas:getDimensions())
+        x = x + 8
+        counter = counter + 1
+    end
+
+    x = 96
+    y = y + 8
+
+    for i = 0, 2 do
+        quads[counter] = love.graphics.newQuad(x, y, 8, 8, atlas:getDimensions())
+        x = x + 8
+        counter = counter + 1
+    end
+
+    return quads
+end
