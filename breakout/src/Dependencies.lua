@@ -24,6 +24,12 @@ require 'src/Paddle'
 -- the ball that travels around the screen destroying bricks
 require 'src/Ball'
 
+-- the bricks to collide with
+require 'src/Brick'
+
+-- the class used to generate new levels/brick layouts
+require 'src/LevelMaker'
+
 -- a basic StateMachine class which will allow us to transition to and from
 -- game states smoothly and avoid monolithic code in one file
 require 'src/StateMachine'

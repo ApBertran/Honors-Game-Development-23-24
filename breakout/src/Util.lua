@@ -31,13 +31,17 @@ end
     https://stackoverflow.com/questions/24821045/does-lua-have-something-like-pythons-slice
 ]]
 function table.slice(tbl, first, last, step)
-    local slided = {}
+    local sliced = {}
 
     for i = first or 1, last or #tbl, step or 1 do
         sliced[#sliced+1] = tbl[i]
     end
 
     return sliced
+end
+
+function GenerateQuadsBricks(atlas)
+    return table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
 end
 
 function GenerateQuadsPaddles(atlas)
