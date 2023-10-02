@@ -21,6 +21,9 @@ require 'src/Util'
 -- the rectangular entity the player controls
 require 'src/Paddle'
 
+-- the ball that travels around the screen destroying bricks
+require 'src/Ball'
+
 -- a basic StateMachine class which will allow us to transition to and from
 -- game states smoothly and avoid monolithic code in one file
 require 'src/StateMachine'
