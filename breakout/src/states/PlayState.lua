@@ -55,29 +55,25 @@ function PlayState:update(dt)
         if brick.inPlay and self.ball:collides(brick) then
             brick:hit()
 
-            self.score = self.score + 20
+            self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
             -- collision code for bricks
             -- check left edge if we are moving right
-            if self.ball.x + 2 < brick.x and self.ball.dx > 0 then
+            if self.ball.x + 2 < brick.x and self.ball.dx < 0 then
                 self.ball.dx = -self.ball.dx
                 self.ball.x = brick.x - 8
-                break
             -- check right edge if we are moving left
             elseif self.ball.x + 6 > brick.x + brick.width and self.ball.dx > 0 then
                 self.ball.dx = - self.ball.dx
                 self.ball.x = brick.x + 32
-                break
             -- check top edge (always check)
             elseif self.ball.y < brick.y then
                 self.ball.dy = -self.ball.dy
                 self.ball.y = brick.y - 8
-                break
             -- check bottom edge (only remaining possiblity)
             else
                 self.ball.dy = -self.ball.dy
                 self.ball.y = brick.y + 16
-                break
             end
 
             -- slowly accelerate ball
@@ -108,6 +104,10 @@ function PlayState:update(dt)
         end
     end
 
+    for k, brick in pairs(self.bricks) do
+        brick:update(dt)
+    end
+
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end
@@ -119,6 +119,10 @@ function PlayState:render()
 
     for k, brick in pairs(self.bricks) do
         brick:render()
+    end
+
+    for k, brick in pairs(self.bricks) do
+        brick:renderParticles()
     end
 
     renderScore(self.score)
