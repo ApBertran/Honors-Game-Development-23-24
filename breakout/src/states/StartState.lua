@@ -20,6 +20,10 @@ StartState = Class{__includes = BaseState}
 -- whether we're highlighting "Start" or "High Scores"
 local highlighted = 1
 
+function StartState:enter(params)
+    self.highScores = params.highScores
+end
+
 function StartState:update(dt)
     -- toggle highlighted option if we press an arrow key up or down
     if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
@@ -34,9 +38,14 @@ function StartState:update(dt)
         if highlighted == 1 then
             gStateMachine:change('serve', {
                 paddle = Paddle(1),
-                bricks = LevelMaker.createMap(30),
+                bricks = LevelMaker.createMap(1),
                 health = 3,
-                score = 0
+                score = 0,
+                level = 1
+            })
+        else
+            gStateMachine:change('high-scores', {
+                highScores = self.highScores
             })
         end
     end
