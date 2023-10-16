@@ -65,6 +65,7 @@ function love.load()
         ['balls'] = GenerateQuadsBalls(gTextures['main']),
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
+        ['arrows'] = GenerateQuads(gTextures['arrows'], 24, 24),
     }
 
 
@@ -115,10 +116,15 @@ function love.load()
         ['victory'] = function() return VictoryState() end,
         ['high-scores'] = function() return HighScoreState() end,
         ['enter-high-score'] = function() return EnterHighScoreState() end,
+        ['paddle-select'] = function() return PaddleSelectState() end,
     }
     gStateMachine:change('start', {
         highScores = loadHighScores()
     })
+
+    -- play the beats
+    gSounds['music']:play()
+    gSounds['music']:setLooping(true)
 
     -- a table we'll use to keep track of which keys have been pressed this
     -- frame, to get around the fact that LÖVE's default callback won't let us

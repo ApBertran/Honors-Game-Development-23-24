@@ -75,11 +75,11 @@ function PlayState:update(dt)
 
             -- collision code for bricks
             -- check left edge if we are moving right
-            if self.ball.x + 2 < brick.x and self.ball.dx < 0 then
+            if self.ball.x + 2 < brick.x and self.ball.dx > 0 then
                 self.ball.dx = -self.ball.dx
                 self.ball.x = brick.x - 8
             -- check right edge if we are moving left
-            elseif self.ball.x + 6 > brick.x + brick.width and self.ball.dx > 0 then
+            elseif self.ball.x + 6 > brick.x + brick.width and self.ball.dx < 0 then
                 self.ball.dx = - self.ball.dx
                 self.ball.x = brick.x + 32
             -- check top edge (always check)
