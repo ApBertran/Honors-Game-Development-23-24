@@ -7,15 +7,17 @@ function ServeState:enter(params)
     self.score = params.score
     self.level = params.level
     self.highScores = params.highScores
+    self.powerups = {}
 
-    self.ball = Ball()
-    self.ball.skin = math.random(7)
+    self.balls = {}
+    table.insert(self.balls, Ball())
+    self.balls[1].skin = math.random(7)
 end
 
 function ServeState:update(dt)
     self.paddle:update(dt)
-    self.ball.x = self.paddle.x + (self.paddle.width / 2) - 4
-    self.ball.y = self.paddle.y - 8
+    self.balls[1].x = self.paddle.x + (self.paddle.width / 2) - 4
+    self.balls[1].y = self.paddle.y - 8
 
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
         gStateMachine:change('play', {
@@ -23,9 +25,10 @@ function ServeState:update(dt)
             bricks = self.bricks,
             health = self.health,
             score = self.score,
-            ball = self.ball,
+            balls = self.balls,
             level = self.level,
-            highScores = self.highScores
+            highScores = self.highScores,
+            powerups = self.powerups
         })
     end
 
@@ -36,7 +39,7 @@ end
 
 function ServeState:render()
     self.paddle:render()
-    self.ball:render()
+    self.balls[1]:render()
 
     for k, brick in pairs(self.bricks) do
         brick:render()

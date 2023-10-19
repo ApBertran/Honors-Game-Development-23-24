@@ -19,7 +19,7 @@ function LevelMaker.createMap(level)
     numCols = numCols % 2 == 0 and (numCols + 1) or numCols
 
     local highestColor = math.min(3, math.floor(level / 5))
-    local highestTier = math.min(5, level % 5 + 3)
+    local highestTier = math.min(3, level % 4 + 1)
 
     for y = 1, numRows do
         -- determine whether or not to skip the current row

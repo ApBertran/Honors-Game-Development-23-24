@@ -66,6 +66,7 @@ function love.load()
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
         ['arrows'] = GenerateQuads(gTextures['arrows'], 24, 24),
+        ['powerups'] = GenerateQuadsPowerups(gTextures['main']),
     }
 
 

@@ -27,6 +27,9 @@ require 'src/Ball'
 -- the bricks to collide with
 require 'src/Brick'
 
+-- powerups
+require 'src/Powerup'
+
 -- the class used to generate new levels/brick layouts
 require 'src/LevelMaker'
 
