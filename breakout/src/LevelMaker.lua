@@ -18,7 +18,7 @@ function LevelMaker.createMap(level)
     local numCols = math.random(7, 13)
     numCols = numCols % 2 == 0 and (numCols + 1) or numCols
 
-    local highestColor = math.min(3, math.floor(level / 5))
+    local highestColor = math.min(3, math.floor(level / 1.5))
     local highestTier = math.min(3, level % 4 + 1)
 
     for y = 1, numRows do

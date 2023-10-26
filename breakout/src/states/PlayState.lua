@@ -15,6 +15,8 @@ function PlayState:enter(params)
     self.level = params.level
     self.highScores = params.highScores
     self.powerups = params.powerups
+    self.scoreStreak = params.scoreStreak
+    self.disco = false
 
     for k, ball in pairs(self.balls) do
         ball.dx = math.random(-200, 200)
@@ -39,6 +41,28 @@ function PlayState:update(dt)
     end
 
     self.paddle:update(dt)
+    -- change size of paddle based on points streak
+    self.disco = false
+    if self.scoreStreak < 1000 then
+        self.paddle.size = 1
+    elseif self.scoreStreak < 5000 then
+        self.paddle.size = 2
+    elseif self.scoreStreak < 10000 then
+        self.paddle.size = 3
+    else
+        self.paddle.size = 4
+        self.disco = true
+    end
+
+    if self.disco then
+        for k, ball in pairs(self.balls) do
+            ball.skin = ball.skin + 1
+            if ball.skin > 7 then
+                ball.skin = 1
+            end
+        end
+    end
+
     for k, ball in pairs(self.balls) do
         ball:update(dt)
 
@@ -53,7 +77,6 @@ function PlayState:update(dt)
                 ball.dx = 50 + (8 * math.abs(self.paddle.x + self.paddle.width / 2 - ball.x))
             end
 
-
             gSounds['paddle-hit']:play()
         end
     
@@ -62,6 +85,7 @@ function PlayState:update(dt)
                 brick:hit()
 
                 self.score = self.score + (brick.tier * 200 + brick.color * 25)
+                self.scoreStreak = self.scoreStreak + (brick.tier * 200 + brick.color * 25)
 
                 if self:checkVictory() then
                     gSounds['victory']:play()
@@ -72,11 +96,12 @@ function PlayState:update(dt)
                         health = self.health,
                         score = self.score,
                         balls = self.balls,
-                        highScores = self.highScores
+                        highScores = self.highScores,
+                        scoreStreak = self.scoreStreak
                     })
                 end
 
-                if math.random(1, 10) < 11 then
+                if math.random(1, 10) < 2 then
                     local power = math.random(1,5) <= 4 and 9 or 3
                     table.insert(self.powerups, Powerup(ball.x - 4, ball.y - 4, power))
                 end
@@ -115,12 +140,14 @@ function PlayState:update(dt)
             if powerup.ability == 3 and self.health < 3 then
                 self.health = self.health + 1
             elseif powerup.ability == 9 then
-                table.insert(self.balls, Ball())
-                self.balls[#self.balls].skin = math.random(7)
-                self.balls[#self.balls].x = self.paddle.x + (self.paddle.width / 2) - 4
-                self.balls[#self.balls].y = self.paddle.y - 8
-                self.balls[#self.balls].dx = math.random(-200, 200)
-                self.balls[#self.balls].dy = math.random(-50, -60)
+                for i = 1, 3 do
+                    table.insert(self.balls, Ball())
+                    self.balls[#self.balls].skin = math.random(7)
+                    self.balls[#self.balls].x = self.paddle.x + (self.paddle.width / 2) - 4
+                    self.balls[#self.balls].y = self.paddle.y - 8
+                    self.balls[#self.balls].dx = math.random(-200, 200)
+                    self.balls[#self.balls].dy = math.random(-50, -60)
+                end
             end
             table.remove(self.powerups, k)
         end
@@ -138,6 +165,7 @@ function PlayState:update(dt)
                 table.remove(self.balls, k)
             else
                 self.health = self.health - 1
+                self.scoreStreak = 0
                 if self.health == 0 then
                     gStateMachine:change('game-over', {
                         score = self.score,
@@ -151,7 +179,8 @@ function PlayState:update(dt)
                         score = self.score,
                         level = self.level,
                         highScores = self.highScores,
-                        powerups = self.powerups
+                        powerups = self.powerups,
+                        scoreStreak = self.scoreStreak
                     })
                 end
             gSounds['hurt']:stop()

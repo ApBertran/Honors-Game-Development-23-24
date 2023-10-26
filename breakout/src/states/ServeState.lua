@@ -8,6 +8,11 @@ function ServeState:enter(params)
     self.level = params.level
     self.highScores = params.highScores
     self.powerups = {}
+    self.scoreStreak = params.scoreStreak
+
+    if self.scoreStreak == nil then
+        self.scoreStreak = 0
+    end
 
     self.balls = {}
     table.insert(self.balls, Ball())
@@ -15,6 +20,17 @@ function ServeState:enter(params)
 end
 
 function ServeState:update(dt)
+    -- change size of paddle based on points streak
+    if self.scoreStreak < 1000 then
+        self.paddle.size = 1
+    elseif self.scoreStreak < 5000 then
+        self.paddle.size = 2
+    elseif self.scoreStreak < 10000 then
+        self.paddle.size = 3
+    else
+        self.paddle.size = 4
+    end
+    
     self.paddle:update(dt)
     self.balls[1].x = self.paddle.x + (self.paddle.width / 2) - 4
     self.balls[1].y = self.paddle.y - 8
@@ -28,7 +44,8 @@ function ServeState:update(dt)
             balls = self.balls,
             level = self.level,
             highScores = self.highScores,
-            powerups = self.powerups
+            powerups = self.powerups,
+            scoreStreak = self.scoreStreak
         })
     end
 

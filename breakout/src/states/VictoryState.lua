@@ -6,6 +6,7 @@ function VictoryState:enter(params)
     self.health = params.health
     self.score = params.score
     self.highScores = params.highScores
+    self.scoreStreak = params.scoreStreak
 end
 
 function VictoryState:update(dt)
@@ -19,7 +20,8 @@ function VictoryState:update(dt)
             paddle = self.paddle,
             health = self.health,
             score = self.score,
-            highScores = self.highScores
+            highScores = self.highScores,
+            scoreStreak = self.scoreStreak
         })
     end
 end
