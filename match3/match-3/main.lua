@@ -69,9 +69,13 @@ function love.load()
         ['start'] = function() return StartState() end,
         ['begin-game'] = function() return BeginGameState() end,
         ['play'] = function() return PlayState() end,
-        ['game-over'] = function() return GameOverState() end
+        ['game-over'] = function() return GameOverState() end,
+        ['high-scores'] = function() return HighScoreState() end,
+        ['enter-high-score'] = function() return EnterHighScoreState() end
     }
-    gStateMachine:change('start')
+    gStateMachine:change('start', {
+        highScores = loadHighScores()
+    })
 
     -- keep track of scrolling our background on the X axis
     backgroundX = 0
@@ -96,6 +100,47 @@ function love.keyboard.wasPressed(key)
     else
         return false
     end
+end
+
+function loadHighScores()
+    love.filesystem.setIdentity('match3')
+
+    if not love.filesystem.getInfo('match3.lst') then
+        local scores = ''
+        for i = 10, 1, -1 do
+            scores = scores .. 'AAA\n'
+            scores = scores .. tostring(i * 1000) .. '\n'
+        end
+
+        love.filesystem.write('match3.lst', scores)
+    end
+
+    local name = true
+    local currentName = nil 
+    local counter = 1
+
+    local scores = {}
+
+    for i = 1, 10 do
+        scores[i] = {
+            name = nil,
+            score = nil
+        }
+    end
+
+    -- iterate over file of high scores to store them locally
+    for line in love.filesystem.lines('match3.lst') do
+        if name then
+            scores[counter].name = string.sub(line, 1, 3)
+        else
+            scores[counter].score = tonumber(line)
+            counter = counter + 1
+        end
+
+        name = not name
+    end
+
+    return scores
 end
 
 function love.update(dt)

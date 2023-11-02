@@ -17,12 +17,7 @@ function Board:init(x, y, level)
     self.x = x
     self.y = y
     self.matches = {}
-    self.level = level
-    if self.level >= 6 then
-        self.tileLevel = 6
-    else
-        self.tileLevel = self.level
-    end
+    self.tileLevel = level
 
     self:initializeTiles()
 end

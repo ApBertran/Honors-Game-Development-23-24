@@ -31,6 +31,18 @@ function BeginGameState:enter(def)
     -- grab level # from the def we're passed
     self.level = def.level
 
+    self.highScores = def.highScores
+
+    if self.level >= 6 then
+        self.board.tileLevel = 6
+    else
+        self.board.tileLevel = self.level
+    end
+
+    self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level or 1)
+
+    self.totalScore = def.totalScore
+
     --
     -- animate our white screen fade-in, then animate a drop-down with
     -- the level text
@@ -61,7 +73,9 @@ function BeginGameState:enter(def)
                 :finish(function()
                     gStateMachine:change('play', {
                         level = self.level,
-                        board = self.board
+                        board = self.board,
+                        highScores = self.highScores,
+                        totalScore = self.totalScore
                     })
                 end)
             end)
