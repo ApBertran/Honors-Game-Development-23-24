@@ -169,6 +169,7 @@ end
 function Board:removeMatches()
     for k, match in pairs(self.matches) do
         for k, tile in pairs(match) do
+            self.tiles[tile.gridY][tile.gridX]:match()
             self.tiles[tile.gridY][tile.gridX] = nil
         end
     end
