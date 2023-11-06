@@ -43,6 +43,12 @@ local paletteColors = {
         ['r'] = 251,
         ['g'] = 242,
         ['b'] = 52
+    },
+    -- white
+    [6] = {
+        ['r'] = 255,
+        ['g'] = 255,
+        ['b'] = 255
     }
 }
 
@@ -58,11 +64,28 @@ function Tile:init(x, y, color, variety)
     self.x = (self.gridX - 1) * 32
     self.y = (self.gridY - 1) * 32
 
+    self.particleX = 0
+    self.particleY = 0
+
     -- tile appearance/points
     self.color = color
     self.variety = variety
 
-    self.Pcolor = 1
+    -- if self.color < 3 or self.color == 14 or self.color == 15 then
+    --     self.Pcolor = 5
+    -- elseif self.color < 6 then
+    --     self.Pcolor = 2
+    -- elseif self.color < 8 then
+    --     self.Pcolor = 1
+    -- elseif self.color < 10 then
+    --     self.Pcolor = 4
+    -- elseif self.color < 14 then
+    --     self.Pcolor = 3
+    -- else
+    --     self.Pcolor = 6
+    -- end
+
+    self.Pcolor = 6
 
     self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
 
@@ -71,6 +94,10 @@ function Tile:init(x, y, color, variety)
     self.psystem:setEmissionArea('borderrectangle', 5, 5)
 
     self.spawn = math.random(0,0.5)
+end
+
+function Tile:update(dt)
+    self.psystem:update(dt)
 end
 
 function Tile:render(x, y)
@@ -84,6 +111,10 @@ function Tile:render(x, y)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(gTextures['main'], gFrames['tiles'][self.color][self.variety],
         self.x + x, self.y + y)
+    love.graphics.draw(self.psystem, self.x + x + 16, self.y + y + 16)
+
+    self.particleX = self.x + x + 16
+    self.particleY = self.y + y + 16
 end
 
 function Tile:match()
@@ -102,5 +133,5 @@ function Tile:match()
         0
     )
     self.psystem:emit(256)
-
+    return {self.psystem, self.particleX, self.particleY}
 end

@@ -18,6 +18,7 @@ function Board:init(x, y, level)
     self.y = y
     self.matches = {}
     self.tileLevel = level
+    self.particles = {}
 
     self:initializeTiles()
 end
@@ -82,6 +83,7 @@ function Board:calculateMatches()
                         
                         -- add each tile to the match that's in that match
                         table.insert(match, self.tiles[y][x2])
+                        table.insert(self.particles, self.tiles[y][x2]:match())
                     end
 
                     -- add this match to our total matches table
@@ -169,7 +171,7 @@ end
 function Board:removeMatches()
     for k, match in pairs(self.matches) do
         for k, tile in pairs(match) do
-            self.tiles[tile.gridY][tile.gridX]:match()
+            table.insert(self.particles, self.tiles[tile.gridY][tile.gridX]:match())
             self.tiles[tile.gridY][tile.gridX] = nil
         end
     end
@@ -262,5 +264,9 @@ function Board:render()
         for x = 1, #self.tiles[1] do
             self.tiles[y][x]:render(self.x, self.y)
         end
+    end
+
+    for k, particle in pairs(self.particles) do
+        love.graphics.draw(particle[1], particle[2], particle[3])
     end
 end

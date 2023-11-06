@@ -210,6 +210,10 @@ function PlayState:update(dt)
     end
 
     Timer.update(dt)
+
+    for k, particle in pairs(self.board.particles) do
+        particle[1]:update(dt)
+    end
 end
 
 --[[
