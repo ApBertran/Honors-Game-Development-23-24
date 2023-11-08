@@ -71,21 +71,19 @@ function Tile:init(x, y, color, variety)
     self.color = color
     self.variety = variety
 
-    -- if self.color < 3 or self.color == 14 or self.color == 15 then
-    --     self.Pcolor = 5
-    -- elseif self.color < 6 then
-    --     self.Pcolor = 2
-    -- elseif self.color < 8 then
-    --     self.Pcolor = 1
-    -- elseif self.color < 10 then
-    --     self.Pcolor = 4
-    -- elseif self.color < 14 then
-    --     self.Pcolor = 3
-    -- else
-    --     self.Pcolor = 6
-    -- end
-
-    self.Pcolor = 6
+    if self.color == 1 or self.color == 3 or self.color == 10 or self.color == 12 then
+        self.Pcolor = 5
+    elseif self.color == 2 or self.color == 4 or self.color == 6 or self.color == 8 then
+        self.Pcolor = 3
+    elseif self.color == 5 or self.color == 7 or self.color == 9 then
+        self.Pcolor = 2
+    elseif self.color == 11 or self.color == 13 then
+        self.Pcolor = 1
+    elseif self.color == 15 or self.color == 17 then
+        self.Pcolor = 4
+    else
+        self.Pcolor = 6
+    end
 
     self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
 
@@ -120,7 +118,7 @@ end
 function Tile:match()
     local nextColor = self.Pcolor - 1
     if nextColor == 0 then 
-        nextColor = 5
+        nextColor = 6
     end
     self.psystem:setColors(
         paletteColors[self.Pcolor].r / 255,
