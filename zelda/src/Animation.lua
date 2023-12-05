@@ -10,6 +10,8 @@
 
 Animation = Class{}
 
+love.graphics.setDefaultFilter('nearest', 'nearest')
+
 function Animation:init(def)
     self.frames = def.frames
     self.interval = def.interval
