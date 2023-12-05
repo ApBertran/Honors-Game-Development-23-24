@@ -37,6 +37,8 @@ CAMERA_SCROLL_SPEED = 40
 SKY = 2
 GROUND = 1
 
+love.graphics.setDefaultFilter('nearest', 'nearest')
+
 function love.load()
     math.randomseed(os.time())
 

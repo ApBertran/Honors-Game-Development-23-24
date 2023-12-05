@@ -27,8 +27,17 @@ function LevelMaker.generate(width, height)
         table.insert(tiles, {})
     end
 
+    -- ensure first column is ground
+    for y = 1, height do
+        if y > height - 4 then
+            tiles[y][1] = Tile(1, y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+        else
+            tiles[y][1] = Tile(1, y, TILE_ID_EMPTY, false, tileset, topperset)
+        end
+    end
+
     -- column by column generation instead of row; sometimes better for platformers
-    for x = 1, width do
+    for x = 2, width - 1 do
         local tileID = TILE_ID_EMPTY
         
         -- lay out the empty space
@@ -137,7 +146,7 @@ function LevelMaker.generate(width, height)
                                         -- gem has its own function to add to the player's score
                                         onConsume = function(player, object)
                                             gSounds['pickup']:play()
-                                            player.score = player.score + 100
+                                            score = score + 100
                                         end
                                     }
                                     
@@ -160,6 +169,65 @@ function LevelMaker.generate(width, height)
             end
         end
     end
+
+    for y = 1, height do
+        if y > height - 5 then
+            tiles[y][math.floor(width / 2 - 2)] = Tile(math.floor(width / 2 - 2), y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+            tiles[y][math.floor(width / 2 + 2)] = Tile(math.floor(width / 2 + 2), y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+        else
+            tiles[y][math.floor(width / 2 - 2)] = Tile(math.floor(width / 2 - 2), y, TILE_ID_EMPTY, false, tileset, topperset)
+            tiles[y][math.floor(width / 2 + 2)] = Tile(math.floor(width / 2 + 2), y, TILE_ID_EMPTY, false, tileset, topperset)
+        end
+    end
+
+    for y = 1, height do
+        if y > height - 6 then
+            tiles[y][math.floor(width / 2 - 1)] = Tile(math.floor(width / 2 - 1), y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+            tiles[y][math.floor(width / 2 + 1)] = Tile(math.floor(width / 2 + 1), y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+        else
+            tiles[y][math.floor(width / 2 - 1)] = Tile(math.floor(width / 2 - 1), y, TILE_ID_EMPTY, false, tileset, topperset)
+            tiles[y][math.floor(width / 2 + 1)] = Tile(math.floor(width / 2 + 1), y, TILE_ID_EMPTY, false, tileset, topperset)
+        end
+    end
+
+    for y = 1, height do
+        if y > height - 7 then
+            tiles[y][math.floor(width / 2)] = Tile(math.floor(width / 2), y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+        else
+            tiles[y][math.floor(width / 2)] = Tile(math.floor(width / 2), y, TILE_ID_EMPTY, false, tileset, topperset)
+        end
+    end
+
+
+    -- final column to display door
+    for y = 1, height do
+        if y > height - 4 then
+            tiles[y][width] = Tile(width, y, TILE_ID_GROUND, y == height and topper, tileset, topperset)
+        else
+            tiles[y][width] = Tile(width, y, TILE_ID_EMPTY, false, tileset, topperset)
+        end
+    end
+
+    table.insert(objects,
+                    GameObject {
+                        texture = 'doors-windows',
+                        x = (width - 1) * TILE_SIZE,
+                        y = (6 - 2) * TILE_SIZE,
+                        width = 16,
+                        height = 32,
+                        frame = 2,
+                        collidable = true,
+                        consumable = true,
+                        solid = false,
+
+                        onConsume = function(player, object) 
+                            gSounds['pickup']:play()
+                            score = score + 100
+                            stage = stage + 1
+                            gStateMachine:change('play')
+                        end
+                    }
+                )
 
     local map = TileMap(width, height)
     map.tiles = tiles

@@ -20,7 +20,7 @@ end
 
 function PlayerJumpState:enter(params)
     gSounds['jump']:play()
-    self.player.dy = PLAYER_JUMP_VELOCITY
+    self.player.dy = self.player.dy + PLAYER_JUMP_VELOCITY
 end
 
 function PlayerJumpState:update(dt)
@@ -76,6 +76,8 @@ function PlayerJumpState:update(dt)
         if entity:collides(self.player) then
             gSounds['death']:play()
             gStateMachine:change('start')
+            score = 0
+            stage = 1
         end
     end
 end

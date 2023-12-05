@@ -50,7 +50,7 @@ end
 
 function love.resize(w, h)
     push:resize(w, h)
-end
+end 
 
 function love.keypressed(key)
     if key == 'escape' then

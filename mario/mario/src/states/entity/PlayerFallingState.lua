@@ -46,6 +46,8 @@ function PlayerFallingState:update(dt)
     elseif self.player.y > VIRTUAL_HEIGHT then
         gSounds['death']:play()
         gStateMachine:change('start')
+        score = 0
+        stage = 1
     
     -- check side collisions and reset position
     elseif love.keyboard.isDown('left') then
@@ -82,8 +84,10 @@ function PlayerFallingState:update(dt)
         if entity:collides(self.player) then
             gSounds['kill']:play()
             gSounds['kill2']:play()
-            self.player.score = self.player.score + 100
+            score = score + 100
             table.remove(self.player.level.entities, k)
+            self.player.dy = 75
+            self.player:changeState('jump')
         end
     end
 end

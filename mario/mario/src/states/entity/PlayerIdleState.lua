@@ -33,6 +33,8 @@ function PlayerIdleState:update(dt)
         if entity:collides(self.player) then
             gSounds['death']:play()
             gStateMachine:change('start')
+            score = 0
+            stage = 1
         end
     end
 end

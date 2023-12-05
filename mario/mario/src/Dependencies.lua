@@ -73,7 +73,8 @@ gTextures = {
     ['gems'] = love.graphics.newImage('graphics/gems.png'),
     ['backgrounds'] = love.graphics.newImage('graphics/backgrounds.png'),
     ['green-alien'] = love.graphics.newImage('graphics/green_alien.png'),
-    ['creatures'] = love.graphics.newImage('graphics/creatures.png')
+    ['creatures'] = love.graphics.newImage('graphics/creatures.png'),
+    ['doors-windows'] = love.graphics.newImage('graphics/doors_and_windows.png')
 }
 
 gFrames = {
@@ -86,7 +87,8 @@ gFrames = {
     ['gems'] = GenerateQuads(gTextures['gems'], 16, 16),
     ['backgrounds'] = GenerateQuads(gTextures['backgrounds'], 256, 128),
     ['green-alien'] = GenerateQuads(gTextures['green-alien'], 16, 20),
-    ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16)
+    ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16),
+    ['doors-windows'] = GenerateQuads(gTextures['doors-windows'], 16, 32)
 }
 
 -- these need to be added after gFrames is initialized because they refer to gFrames from within
@@ -102,3 +104,6 @@ gFonts = {
     ['large'] = love.graphics.newFont('fonts/font.ttf', 32),
     ['title'] = love.graphics.newFont('fonts/ArcadeAlternate.ttf', 32)
 }
+
+score = 0
+stage = 1

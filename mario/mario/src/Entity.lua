@@ -33,6 +33,9 @@ function Entity:init(def)
 
     -- reference to level for tests against other entities + objects
     self.level = def.level
+
+    self.levelCount = def.levelCount or 1
+    self.score = def.score or 0
 end
 
 function Entity:changeState(state, params)
