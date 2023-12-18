@@ -63,8 +63,9 @@ function PlayerSwingSwordState:update(dt)
     
     -- check if hitbox collides with any entities in the scene
     for k, entity in pairs(self.dungeon.currentRoom.entities) do
-        if entity:collides(self.swordHitbox) then
+        if entity:collides(self.swordHitbox) and not entity.invulnerable then
             entity:damage(1)
+            entity:goInvulnerable(0.2)
             gSounds['hit-enemy']:play()
         end
     end

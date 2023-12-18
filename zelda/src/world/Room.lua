@@ -64,7 +64,7 @@ function Room:generateEntities()
             width = 16,
             height = 16,
 
-            health = 1
+            health = math.random(1,3)
         })
 
         self.entities[i].stateMachine = StateMachine {
@@ -90,7 +90,16 @@ function Room:generateObjects()
 
     -- define a function for the switch that will open all doors in the room
     switch.onCollide = function()
-        if switch.state == 'unpressed' then
+        local roomClear = true
+        -- check that every entity is dead before opening door, stop if not
+        for i = #self.entities, 1, -1 do
+            local entity = self.entities[i]
+            if not entity.dead then
+                roomClear = false
+            end
+        end
+
+        if switch.state == 'unpressed' and roomClear then
             switch.state = 'pressed'
             
             -- open every door in the room if we press the switch
@@ -158,6 +167,11 @@ function Room:update(dt)
 
         -- remove entity from the table if health is <= 0
         if entity.health <= 0 then
+            if not entity.dead then 
+                if math.random(1,3) == 1 then
+                    self.player.health = self.player.health + 1
+                end
+            end
             entity.dead = true
         elseif not entity.dead then
             entity:processAI({room = self}, dt)
