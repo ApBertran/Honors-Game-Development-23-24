@@ -115,11 +115,23 @@ function Level:init()
 
     -- spawn a few obstacles
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
-        VIRTUAL_WIDTH - 120, VIRTUAL_HEIGHT - 35 - 110 / 2))
+        VIRTUAL_WIDTH - 135, VIRTUAL_HEIGHT - 35 - 110 / 2))
     table.insert(self.obstacles, Obstacle(self.world, 'vertical',
         VIRTUAL_WIDTH - 35, VIRTUAL_HEIGHT - 35 - 110 / 2))
     table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
         VIRTUAL_WIDTH - 80, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'vertical',
+        VIRTUAL_WIDTH - 125, VIRTUAL_HEIGHT - 35 - 110 - 180 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
+        VIRTUAL_WIDTH - 170, VIRTUAL_HEIGHT - 35 - 110 - 35 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
+        VIRTUAL_WIDTH - 125, VIRTUAL_HEIGHT - 35 - 110 - 300 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
+        VIRTUAL_WIDTH - 200, VIRTUAL_HEIGHT - 35 - 30 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
+        VIRTUAL_WIDTH - 320, VIRTUAL_HEIGHT - 35 - 30 / 2))
+    table.insert(self.obstacles, Obstacle(self.world, 'horizontal',
+        VIRTUAL_WIDTH - 320, VIRTUAL_HEIGHT - 35 - 40 - 35 / 2))
 
     -- ground data
     self.groundBody = love.physics.newBody(self.world, -VIRTUAL_WIDTH, VIRTUAL_HEIGHT - 35, 'static')
